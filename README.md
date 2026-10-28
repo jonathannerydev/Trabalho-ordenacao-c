@@ -4,44 +4,44 @@ Trabalho prático desenvolvido para unir conceitos de **manipulação de arquivo
 
 ---
 
-## 👥 Equipa do Projeto
+## 👥 Equipe e Divisão de Tarefas
 
-O desenvolvimento das funcionalidades e algoritmos foi distribuído entre os elementos do grupo:
+O desenvolvimento das funcionalidades e algoritmos foi distribuído entre os integrantes do grupo:
 
-* **Jonathan** — Implementação do *Quick Sort* e Estruturação do Menu Principal (`switch/case`).
-* **Leonardo** — Implementação do *Bubble Sort* e Função de Salvamento do Ficheiro Ordenado (`ordenado.txt`).
-* **Ruan** — Módulo de Manipulação de Ficheiros de Entrada (`dados.txt`) e Função de Alteração/Substituição de Valores.
-* **Kayke** — Implementação do *Insertion Sort* e do *Selection Sort*.
-* **Vinicius** — Implementação do *Merge Sort* (Divisão e Conquista com alocação dinâmica).
+* **Jonathan (Você)** — Módulo de Manipulação de Arquivos (`dados.txt` e `temp.txt`) e Função de Alteração/Edição de Valores.
+* **Kayke** — Implementação dos Algoritmos Intermediários (*Insertion Sort* e *Selection Sort*).
+* **Leonardo** — Implementação do Algoritmo Básico (*Bubble Sort*) e Função de Salvamento do Arquivo Ordenado (`ordenado.txt`).
+* **Vinicius** — Implementação do Algoritmo Avançado - Parte 1 (*Merge Sort* - Divisão e Conquista com alocação dinâmica).
+* **Ruan** — Implementação do Algoritmo Avançado - Parte 2 (*Quick Sort*) e Estruturação do Menu Principal (`switch/case`).
 
 ---
 
 ## ⚙️ Funcionalidades do Sistema
 
-O programa funciona através de um menu interativo e executa as seguintes operações:
-1. **Criar e Gravar Dados (`dados.txt`)**: Permite inserir números desordenados gerando o ficheiro de entrada.
-2. **Leitura e Ordenação**: Lê os dados do ficheiro para um vetor na memória RAM e permite escolher entre **5 algoritmos de ordenação**:
+O programa funciona por meio de um menu interativo e executa as seguintes operações:
+1. **Criar e Gravar Dados (`dados.txt`)**: Permite inserir números desordenados gerando o arquivo de entrada.
+2. **Leitura e Ordenação**: Lê os dados do arquivo para um vetor na memória RAM e permite escolher entre **5 algoritmos de ordenação**:
    * *Bubble Sort*
    * *Insertion Sort*
    * *Selection Sort*
    * *Merge Sort*
    * *Quick Sort*
-3. **Guardar Resultado (`ordenado.txt`)**: Grava automaticamente os dados já ordenados num novo ficheiro.
-4. **Alteração de Valores**: Permite editar um valor específico dentro do ficheiro original utilizando uma estratégia de ficheiro temporário (`temp.txt`).
+3. **Salvar Resultado (`ordenado.txt`)**: Grava automaticamente os dados já ordenados em um novo arquivo.
+4. **Alteração de Valores**: Permite editar um valor específico dentro do arquivo original utilizando uma estratégia de arquivo temporário (`temp.txt`).
 
 ---
 
-## 📂 Estrutura dos Ficheiros Gerados
+## 📂 Estrutura dos Arquivos Gerados
 
-* `dados.txt` — Contém os valores numéricos originais inseridos pelo utilizador (entrada).
+* `dados.txt` — Contém os valores numéricos originais inseridos pelo usuário (entrada).
 * `ordenado.txt` — Contém os valores organizados após a execução do algoritmo de ordenação escolhido.
-* `temp.txt` — Ficheiro auxiliar utilizado temporariamente para atualizar valores no ficheiro original.
+* `temp.txt` — Arquivo auxiliar utilizado temporariamente para atualizar valores no arquivo original.
 
 ---
 
 ## 🚀 Como Compilar e Executar
 
-Certifica-te de que tens um compilador de C instalado (como o **GCC**). Podes compilar e executar o programa através do terminal com os seguintes comandos:
+Certifique-se de que você tem um compilador de C instalado (como o **GCC**). Você pode compilar e executar o programa através do terminal com os seguintes comandos:
 
 ```bash
 # Compilar o código fonte
