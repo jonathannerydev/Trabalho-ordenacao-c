@@ -86,3 +86,147 @@ void alterarValorArquivo() {
         printf("O valor informado nao foi encontrado no arquivo.\n");
     }
 }
+
+
+// Kayke Queriquieri
+#include <stdio.h>
+
+// Insertion Sort
+void insertionSort(int v[], int n) {
+    for (int i = 1; i < n; i++) {
+        int atual = v[i];
+        int j = i - 1;
+
+        while (j >= 0 && v[j] > atual) {
+            v[j + 1] = v[j];
+            j--;
+        }
+
+        v[j + 1] = atual;
+    }
+}
+
+// Selection Sort
+void selectionSort(int v[], int n) {
+    for (int i = 0; i < n - 1; i++) {
+        int menor = i;
+
+        for (int j = i + 1; j < n; j++) {
+            if (v[j] < v[menor]) {
+                menor = j;
+            }
+        }
+
+        if (menor != i) {
+            int temp = v[i];
+            v[i] = v[menor];
+            v[menor] = temp;
+        }
+    }
+}
+
+// Mostrar numeros
+void mostrarVetor(int v[], int n) {
+    for (int i = 0; i < n; i++) {
+        printf("%d ", v[i]);
+    }
+    printf("\n");
+}
+
+int main(void) {
+    int original[] = {64, 25, 12, 22, 11};
+    int insertion[5], selection[5];
+    int n = 5;
+
+    for (int i = 0; i < n; i++) {
+        insertion[i] = original[i];
+        selection[i] = original[i];
+    }
+
+    printf("Vetor original: ");
+    mostrarVetor(original, n);
+
+    insertionSort(insertion, n);
+    printf("Insertion Sort: ");
+    mostrarVetor(insertion, n);
+
+    selectionSort(selection, n);
+    printf("Selection Sort: ");
+    mostrarVetor(selection, n);
+
+    return 0;
+}
+
+// Leonardo
+#include <stdio.h>
+
+// Bubble Sort
+void bubbleSort(int v[], int n) {
+    for (int i = 0; i < n - 1; i++) {
+        int trocou = 0;
+
+        for (int j = 0; j < n - i - 1; j++) {
+            if (v[j] > v[j + 1]) {
+                int temp = v[j];
+                v[j] = v[j + 1];
+                v[j + 1] = temp;
+                trocou = 1;
+            }
+        }
+
+        if (!trocou) {
+            break;
+        }
+    }
+}
+
+// Salvar numeros no arquivo
+int salvarOrdenado(int v[], int n) {
+    FILE *arquivo = fopen("ordenado.txt", "w");
+
+    if (arquivo == NULL) {
+        printf("Nao foi possivel criar o arquivo.\n");
+        return 0;
+    }
+
+    for (int i = 0; i < n; i++) {
+        if (fprintf(arquivo, "%d\n", v[i]) < 0) {
+            printf("Erro ao escrever no arquivo.\n");
+            fclose(arquivo);
+            return 0;
+        }
+    }
+
+    if (fclose(arquivo) != 0) {
+        printf("Erro ao fechar o arquivo.\n");
+        return 0;
+    }
+
+    printf("Dados salvos em ordenado.txt.\n");
+    return 1;
+}
+
+// Mostrar numeros
+void mostrarVetor(int v[], int n) {
+    for (int i = 0; i < n; i++) {
+        printf("%d ", v[i]);
+    }
+    printf("\n");
+}
+
+int main(void) {
+    int numeros[] = {64, 25, 12, 22, 11};
+    int n = sizeof(numeros) / sizeof(numeros[0]);
+
+    printf("Vetor original: ");
+    mostrarVetor(numeros, n);
+
+    bubbleSort(numeros, n);
+
+    printf("Bubble Sort: ");
+    mostrarVetor(numeros, n);
+
+    salvarOrdenado(numeros, n);
+
+    return 0;
+}
