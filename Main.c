@@ -86,3 +86,64 @@ void alterarValorArquivo() {
         printf("O valor informado nao foi encontrado no arquivo.\n");
     }
 }
+
+# Responsável: Kayke
+# Algoritmos: Insertion Sort e Selection Sort
+
+# Algoritmo Insertion Sort
+def insertion_sort(vetor):
+    for i in range(1, len(vetor)):
+        chave = vetor[i]
+        j = i - 1
+
+        while j >= 0 and vetor[j] > chave:
+            vetor[j + 1] = vetor[j]
+            j -= 1
+
+        vetor[j + 1] = chave
+
+    return vetor
+
+
+# Algoritmo Selection Sort
+def selection_sort(vetor):
+    n = len(vetor)
+
+    for i in range(n - 1):
+        indice_menor = i
+
+        for j in range(i + 1, n):
+            if vetor[j] < vetor[indice_menor]:
+                indice_menor = j
+
+        vetor[i], vetor[indice_menor] = (
+            vetor[indice_menor], vetor[i]
+        )
+
+    return vetor
+
+
+# Programa principal
+def main():
+    numeros = [64, 25, 12, 22, 11]
+
+    print("===== ALGORITMOS DE ORDENAÇÃO =====")
+    print("Vetor original:", numeros)
+
+    resultado_insertion = insertion_sort(numeros.copy())
+    resultado_selection = selection_sort(numeros.copy())
+
+    print("\nInsertion Sort:", resultado_insertion)
+    print("Selection Sort:", resultado_selection)
+
+    # Verificação dos resultados
+    esperado = sorted(numeros)
+
+    assert resultado_insertion == esperado
+    assert resultado_selection == esperado
+
+    print("\nTodos os testes passaram!")
+
+
+if __name__ == "__main__":
+    main()
