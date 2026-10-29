@@ -230,3 +230,66 @@ int main(void) {
 
     return 0;
 }
+
+
+void merge(int v[], int temp[], int inicio, int meio, int fim) {
+    int i = inicio;
+    int j = meio + 1;
+    int k = inicio;
+
+    while (i <= meio && j <= fim) {
+        if (v[i] <= v[j]) {
+            temp[k] = v[i];
+            i++;
+        } else {
+            temp[k] = v[j];
+            j++;
+        }
+        k++;
+    }
+
+    while (i <= meio) {
+        temp[k] = v[i];
+        i++;
+        k++;
+    }
+
+    while (j <= fim) {
+        temp[k] = v[j];
+        j++;
+        k++;
+    }
+
+    for (i = inicio; i <= fim; i++) {
+        v[i] = temp[i];
+    }
+}
+
+void mergeSortRec(int v[], int temp[], int inicio, int fim) {
+    if (inicio < fim) {
+        int meio = (inicio + fim) / 2;
+
+        mergeSortRec(v, temp, inicio, meio);
+        mergeSortRec(v, temp, meio + 1, fim);
+
+        merge(v, temp, inicio, meio, fim);
+    }
+}
+
+void mergeSort(int v[], int n) {
+    if (n <= 1) {
+        return;
+    }
+
+    int *temp = malloc(n * sizeof(int));
+
+    if (temp == NULL) {
+        printf("Erro de memoria!\n");
+        return;
+    }
+
+    mergeSortRec(v, temp, 0, n - 1);
+
+    free(temp);
+}
+
