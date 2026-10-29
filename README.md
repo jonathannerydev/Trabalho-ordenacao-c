@@ -1,18 +1,27 @@
 # 📊 Sistema de Ordenação e Manipulação de Arquivos em C
 
-Trabalho prático desenvolvido para unir conceitos de **manipulação de arquivos** e **algoritmos de ordenação** utilizando a linguagem C, no âmbito do curso de Engenharia de Software.
+Trabalho prático desenvolvido para unir conceitos de **manipulação de arquivos** e **algoritmos de ordenação** utilizando a linguagem C, no âmbito do curso de Engenharia de Software da UNICID.
 
 ---
 
-## 👥 Equipe e Divisão de Tarefas
+## 👥 Equipe, RGMs e Divisão de Tarefas
 
 O desenvolvimento das funcionalidades e algoritmos foi distribuído entre os integrantes do grupo:
 
-* **Jonathan** — Módulo de Manipulação de Arquivos (`dados.txt` e `temp.txt`) e Função de Alteração/Edição de Valores.
-* **Kayke** — Implementação dos Algoritmos Intermediários (*Insertion Sort* e *Selection Sort*).
-* **Leonardo** — Implementação do Algoritmo Básico (*Bubble Sort*) e Função de Salvamento do Arquivo Ordenado (`ordenado.txt`).
-* **Vinicius** — Implementação do Algoritmo Avançado - Parte 1 (*Merge Sort* - Divisão e Conquista com alocação dinâmica).
-* **Ruan** — Implementação do Algoritmo Avançado - Parte 2 (*Quick Sort*) e Estruturação do Menu Principal (`switch/case`).
+* **Jonathan Nery Lacerda** (RGM: `47734213`)  
+  — Módulo de Manipulação de Arquivos (`dados.txt` e `temp.txt`) e Função de Alteração/Edição de Valores.
+
+* **Ruan Sousa Silva** (RGM: `47347805`)  
+  — Implementação do Algoritmo Avançado (*Quick Sort*) e Estruturação do Menu Principal (`switch/case`).
+
+* **Kayke Queriquieri da Silva** (RGM: `47556897`)  
+  — Implementação dos Algoritmos Intermediários (*Insertion Sort* e *Selection Sort*).
+
+* **Vinicius de Oliveira** (RGM: `47710608`)  
+  — Implementação do Algoritmo Avançado (*Merge Sort* - Divisão e Conquista com alocação dinâmica).
+
+* **Leonardo Augusto** (RGM: `47733497`)  
+  — Implementação do Algoritmo Básico (*Bubble Sort*) e Função de Salvamento do Arquivo Ordenado (`ordenado.txt`).
 
 ---
 
@@ -45,7 +54,7 @@ Certifique-se de que você tem um compilador de C instalado (como o **GCC**). Vo
 
 ```bash
 # Compilar o código fonte
-gcc main.c -o programa_ordenacao
+gcc Main.c -o programa_ordenacao
 
 # Executar o programa
 # No Linux / macOS:
