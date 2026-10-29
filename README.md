@@ -8,7 +8,7 @@ Trabalho prático desenvolvido para unir conceitos de **manipulação de arquivo
 
 O desenvolvimento das funcionalidades e algoritmos foi distribuído entre os integrantes do grupo:
 
-* **Jonathan (Você)** — Módulo de Manipulação de Arquivos (`dados.txt` e `temp.txt`) e Função de Alteração/Edição de Valores.
+* **Jonathan** — Módulo de Manipulação de Arquivos (`dados.txt` e `temp.txt`) e Função de Alteração/Edição de Valores.
 * **Kayke** — Implementação dos Algoritmos Intermediários (*Insertion Sort* e *Selection Sort*).
 * **Leonardo** — Implementação do Algoritmo Básico (*Bubble Sort*) e Função de Salvamento do Arquivo Ordenado (`ordenado.txt`).
 * **Vinicius** — Implementação do Algoritmo Avançado - Parte 1 (*Merge Sort* - Divisão e Conquista com alocação dinâmica).
