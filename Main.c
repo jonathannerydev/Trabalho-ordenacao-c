@@ -14,20 +14,35 @@ typedef struct {
     char fornecedor[50];
 } Produto;
 
-// Jonathan - Cadastra um novo produto e grava no final do arquivo de texto
+// Jonathan - Cadastra um novo produto gerando ID automático incremental e gravando no arquivo
 void criarArquivoDados() {
-    FILE *f = fopen("dados.txt", "a");
+    FILE *f = fopen("dados.txt", "r");
+    int maiorId = 0;
+    char linha[256];
+    
+    // Lê o arquivo existente para descobrir o maior ID e gerar o próximo de forma incremental
+    if (f != NULL) {
+        Produto tempP;
+        while (fgets(linha, sizeof(linha), f) != NULL) {
+            if (sscanf(linha, "%d;%49[^;];", &tempP.id, tempP.produto) == 2) {
+                if (tempP.id > maiorId) {
+                    maiorId = tempP.id;
+                }
+            }
+        }
+        fclose(f);
+    }
 
+    f = fopen("dados.txt", "a");
     if (f == NULL) {
         printf("Erro ao abrir o arquivo!\n");
         return;
     }
 
     Produto p;
-
-    printf("\n--- NOVO PRODUTO ---\n");
-    printf("ID: ");
-    scanf("%d", &p.id);
+    p.id = maiorId + 1; // ID automático livre de duplicidade
+    
+    printf("\n--- NOVO PRODUTO (ID Atribuido: %d) ---\n", p.id);
 
     int c; while ((c = getchar()) != '\n' && c != EOF);
 
@@ -51,14 +66,14 @@ void criarArquivoDados() {
     fgets(p.fornecedor, 50, stdin);
     p.fornecedor[strcspn(p.fornecedor, "\n")] = '\0';
 
-    // Grava os dados formatados com ponto e vírgula delimitando os campos
+    // Grava a linha formatada com separador ponto e vírgula
     fprintf(f, "%d;%s;%s;%.2f;%d;%s\n", p.id, p.produto, p.categoria, p.preco, p.quantidade, p.fornecedor);
 
     fclose(f);
     printf("Cadastrado com sucesso!\n");
 }
 
-// Jonathan - Lê o arquivo linha por linha e preenche o vetor de structs
+// Jonathan - Lê o arquivo e preenche o vetor de structs usando sscanf para separar os campos
 int lerArquivoDados(Produto v[]) {
     FILE *f = fopen("dados.txt", "r");
 
@@ -70,7 +85,6 @@ int lerArquivoDados(Produto v[]) {
     int i = 0;
     char linha[256];
 
-    // sscanf faz o parsing da linha dividindo pelos separadores ponto e vírgula
     while (i < MAX && fgets(linha, sizeof(linha), f) != NULL) {
         if (sscanf(linha, "%d;%49[^;];%29[^;];%f;%d;%49[^\n]", 
                    &v[i].id, v[i].produto, v[i].categoria, &v[i].preco, &v[i].quantidade, v[i].fornecedor) == 6) {
@@ -82,7 +96,7 @@ int lerArquivoDados(Produto v[]) {
     return i; 
 }
 
-// Jonathan - Altera ou exclui um registro usando a técnica do arquivo temporário para evitar corrupção
+// Jonathan - Altera ou exclui um registro usando um arquivo temporário para evitar corrupção de dados
 void alterarValorArquivo() {
     FILE *f = fopen("dados.txt", "r");
     FILE *temp = fopen("temp.txt", "w");
@@ -133,15 +147,15 @@ void alterarValorArquivo() {
                     fgets(p.fornecedor, 50, stdin);
                     p.fornecedor[strcspn(p.fornecedor, "\n")] = '\0';
 
-                    // Escreve os dados novos no arquivo temporário
+                    // Escreve os novos dados alterados no arquivo temporário
                     fprintf(temp, "%d;%s;%s;%.2f;%d;%s\n", p.id, p.produto, p.categoria, p.preco, p.quantidade, p.fornecedor);
                     printf("Atualizado com sucesso!\n");
                 } else {
-                    // Se for exclusão, pulamos a escrita no temp (o registro é apagado)
+                    // Na exclusão, ignoramos a escrita no temporário para remover o registro
                     printf("Produto removido!\n");
                 }
             } else {
-                // Mantém os outros registros intactos copiando para o temp
+                // Copia os demais registros sem alteração para o temporário
                 fprintf(temp, "%s", linha);
             }
         }
@@ -160,7 +174,7 @@ void alterarValorArquivo() {
 }
 
 
-// Kayke - Insertion Sort adaptado para ordenar o vetor de structs por ID
+// Kayke - Insertion Sort ordenando o vetor de structs por ID
 void insertionSort(Produto v[], int n) {
     for (int i = 1; i < n; i++) {
         Produto atual = v[i];
@@ -194,13 +208,13 @@ void selectionSort(Produto v[], int n) {
     }
 }
 
-// Kayke - Exibe os produtos formatados em uma tabela organizada no terminal
+// Kayke - Exibe os dados formatados em formato de tabela no terminal
 void mostrarVetor(Produto v[], int n) {
     printf("\n---------------------------------------------------------------------------\n");
     printf("| ID  | Produto              | Categoria       | Preco    | Qtd | Fornecedor  |\n");
     printf("---------------------------------------------------------------------------\n");
     for (int i = 0; i < n; i++) {
-        // Alinhamento de colunas usando largura fixa de caracteres no printf
+        // Uso de largura fixa de colunas para alinhar perfeitamente a tabela
         printf("| %-3d | %-20s | %-15s | R$%-6.2f | %-3d | %-11s |\n", 
                v[i].id, v[i].produto, v[i].categoria, v[i].preco, v[i].quantidade, v[i].fornecedor);
     }
@@ -208,7 +222,7 @@ void mostrarVetor(Produto v[], int n) {
 }
 
 
-// Leonardo - Bubble Sort adaptado para struct e salvamento do relatório
+// Leonardo - Bubble Sort adaptado para struct e salvamento do relatório ordenado
 void bubbleSort(Produto v[], int n) {
     for (int i = 0; i < n - 1; i++) {
         int trocou = 0;
@@ -244,7 +258,7 @@ int salvarOrdenado(Produto v[], int n) {
 }
 
 
-// Vinicius - Merge Sort com alocação dinâmica adaptado para struct
+// Vinicius - Merge Sort com alocação dinâmica para structs (Divisão e Conquista)
 void merge(Produto v[], Produto temp[], int inicio, int meio, int fim) {
     int i = inicio;
     int j = meio + 1;
@@ -289,7 +303,7 @@ void mergeSort(Produto v[], int n) {
 }
 
 
-// Ruan - Quick Sort adaptado para struct e gerenciamento do menu principal
+// Ruan - Quick Sort para structs e gerenciamento do menu principal interativo
 void quickSort(Produto vetor[], int inicio, int fim) {
     int i = inicio;
     int j = fim;
