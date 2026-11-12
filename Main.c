@@ -1,120 +1,172 @@
-
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #define MAX 100
 
-// Função para criar o arquivo e gravar os números desordenados fornecidos pelo usuário
+// Estrutura principal que representa os produtos da loja
+typedef struct {
+    int id;
+    char produto[50];
+    char categoria[30];
+    float preco;
+    int quantidade;
+    char fornecedor[50];
+} Produto;
+
+// Jonathan - Cadastra um novo produto e grava no final do arquivo de texto
 void criarArquivoDados() {
-    FILE *arquivo = fopen("dados.txt", "w");
+    FILE *f = fopen("dados.txt", "a");
 
-    if (arquivo == NULL) {
-        printf("Erro ao criar o arquivo dados.txt!\n");
+    if (f == NULL) {
+        printf("Erro ao abrir o arquivo!\n");
         return;
     }
 
-    int quantidade, numero;
-    printf("Quantos numeros deseja inserir? ");
-    scanf("%d", &quantidade);
+    Produto p;
 
-    if (quantidade < 1 || quantidade > MAX) {
-        printf("Quantidade invalida! Digite de 1 a 100.\n");
-        fclose(arquivo);
-        return;
-    }
+    printf("\n--- NOVO PRODUTO ---\n");
+    printf("ID: ");
+    scanf("%d", &p.id);
 
-    printf("Digite os %d valores:\n", quantidade);
+    int c; while ((c = getchar()) != '\n' && c != EOF);
 
-    for (int i = 0; i < quantidade; i++) {
-        scanf("%d", &numero);
-        fprintf(arquivo, "%d\n", numero);
-    }
+    printf("Nome do produto: ");
+    fgets(p.produto, 50, stdin);
+    p.produto[strcspn(p.produto, "\n")] = '\0';
 
-    fclose(arquivo);
-    printf("Dados gravados com sucesso em 'dados.txt'!\n");
+    printf("Categoria: ");
+    fgets(p.categoria, 30, stdin);
+    p.categoria[strcspn(p.categoria, "\n")] = '\0';
+
+    printf("Preco (R$): ");
+    scanf("%f", &p.preco);
+
+    printf("Quantidade: ");
+    scanf("%d", &p.quantidade);
+
+    while ((c = getchar()) != '\n' && c != EOF);
+
+    printf("Fornecedor: ");
+    fgets(p.fornecedor, 50, stdin);
+    p.fornecedor[strcspn(p.fornecedor, "\n")] = '\0';
+
+    // Grava os dados formatados com ponto e vírgula delimitando os campos
+    fprintf(f, "%d;%s;%s;%.2f;%d;%s\n", p.id, p.produto, p.categoria, p.preco, p.quantidade, p.fornecedor);
+
+    fclose(f);
+    printf("Cadastrado com sucesso!\n");
 }
 
-// Função para ler os números do arquivo e jogá-los para um vetor na memória
-int lerArquivoDados(int v[]) {
-    FILE *arquivo = fopen("dados.txt", "r");
+// Jonathan - Lê o arquivo linha por linha e preenche o vetor de structs
+int lerArquivoDados(Produto v[]) {
+    FILE *f = fopen("dados.txt", "r");
 
-    if (arquivo == NULL) {
+    if (f == NULL) {
         printf("Arquivo 'dados.txt' nao encontrado!\n");
         return 0;
     }
 
     int i = 0;
+    char linha[256];
 
-    while (i < MAX && fscanf(arquivo, "%d", &v[i]) == 1) {
-        i++;
+    // sscanf faz o parsing da linha dividindo pelos separadores ponto e vírgula
+    while (i < MAX && fgets(linha, sizeof(linha), f) != NULL) {
+        if (sscanf(linha, "%d;%49[^;];%29[^;];%f;%d;%49[^\n]", 
+                   &v[i].id, v[i].produto, v[i].categoria, &v[i].preco, &v[i].quantidade, v[i].fornecedor) == 6) {
+            i++;
+        }
     }
 
-    fclose(arquivo);
-    return i; // Retorna quantos elementos foram lidos
+    fclose(f);
+    return i; 
 }
 
-// Função para alterar um valor específico dentro do arquivo usando um arquivo temporário
+// Jonathan - Altera ou exclui um registro usando a técnica do arquivo temporário para evitar corrupção
 void alterarValorArquivo() {
-    FILE *arquivo = fopen("dados.txt", "r");
+    FILE *f = fopen("dados.txt", "r");
     FILE *temp = fopen("temp.txt", "w");
 
-    if (arquivo == NULL || temp == NULL) {
-        printf("Erro ao abrir os arquivos para edicao!\n");
-
-        if (arquivo != NULL) {
-            fclose(arquivo);
-        }
-
-        if (temp != NULL) {
-            fclose(temp);
-        }
-
+    if (f == NULL || temp == NULL) {
+        printf("Erro ao abrir os arquivos!\n");
+        if (f) fclose(f);
+        if (temp) fclose(temp);
         return;
     }
 
-    int valorAntigo, valorNovo;
-    int encontrado = 0;
-    int atual;
+    int idAlvo, achou = 0;
+    printf("Digite o ID do produto que deseja alterar/excluir: ");
+    scanf("%d", &idAlvo);
 
-    printf("Qual valor deseja alterar? ");
-    scanf("%d", &valorAntigo);
+    int acao;
+    printf("[1] Alterar | [2] Excluir: ");
+    scanf("%d", &acao);
 
-    printf("Digite o novo valor: ");
-    scanf("%d", &valorNovo);
+    char linha[256];
+    while (fgets(linha, sizeof(linha), f) != NULL) {
+        Produto p;
+        if (sscanf(linha, "%d;%49[^;];%29[^;];%f;%d;%49[^\n]", 
+                   &p.id, p.produto, p.categoria, &p.preco, &p.quantidade, p.fornecedor) == 6) {
+            
+            if (p.id == idAlvo) {
+                achou = 1;
+                if (acao == 1) {
+                    printf("\n--- ALTERANDO ID %d ---\n", p.id);
+                    int c; while ((c = getchar()) != '\n' && c != EOF);
+                    
+                    printf("Novo nome: ");
+                    fgets(p.produto, 50, stdin);
+                    p.produto[strcspn(p.produto, "\n")] = '\0';
 
-    // Lê o arquivo original linha por linha e passa pro temporário, alterando o valor desejado
-    while (fscanf(arquivo, "%d", &atual) == 1) {
-        if (atual == valorAntigo && !encontrado) {
-            fprintf(temp, "%d\n", valorNovo);
-            encontrado = 1; // Altera apenas a primeira ocorrência
-        } else {
-            fprintf(temp, "%d\n", atual);
+                    printf("Nova categoria: ");
+                    fgets(p.categoria, 30, stdin);
+                    p.categoria[strcspn(p.categoria, "\n")] = '\0';
+
+                    printf("Novo preco: ");
+                    scanf("%f", &p.preco);
+
+                    printf("Nova quantidade: ");
+                    scanf("%d", &p.quantidade);
+
+                    while ((c = getchar()) != '\n' && c != EOF);
+                    printf("Novo fornecedor: ");
+                    fgets(p.fornecedor, 50, stdin);
+                    p.fornecedor[strcspn(p.fornecedor, "\n")] = '\0';
+
+                    // Escreve os dados novos no arquivo temporário
+                    fprintf(temp, "%d;%s;%s;%.2f;%d;%s\n", p.id, p.produto, p.categoria, p.preco, p.quantidade, p.fornecedor);
+                    printf("Atualizado com sucesso!\n");
+                } else {
+                    // Se for exclusão, pulamos a escrita no temp (o registro é apagado)
+                    printf("Produto removido!\n");
+                }
+            } else {
+                // Mantém os outros registros intactos copiando para o temp
+                fprintf(temp, "%s", linha);
+            }
         }
     }
 
-    fclose(arquivo);
+    fclose(f);
     fclose(temp);
 
-    // Substitui o arquivo antigo pelo novo atualizado
+    // Substitui o arquivo original pelo temporário atualizado
     remove("dados.txt");
     rename("temp.txt", "dados.txt");
 
-    if (encontrado) {
-        printf("Valor alterado com sucesso!\n");
-    } else {
-        printf("O valor informado nao foi encontrado no arquivo.\n");
+    if (!achou) {
+        printf("ID nao encontrado.\n");
     }
 }
 
 
-// Kayke Queriquieri
-// Insertion Sort
-void insertionSort(int v[], int n) {
+// Kayke - Insertion Sort adaptado para ordenar o vetor de structs por ID
+void insertionSort(Produto v[], int n) {
     for (int i = 1; i < n; i++) {
-        int atual = v[i];
+        Produto atual = v[i];
         int j = i - 1;
 
-        while (j >= 0 && v[j] > atual) {
+        while (j >= 0 && v[j].id > atual.id) {
             v[j + 1] = v[j];
             j--;
         }
@@ -123,57 +175,58 @@ void insertionSort(int v[], int n) {
     }
 }
 
-// Selection Sort
-void selectionSort(int v[], int n) {
+// Kayke - Selection Sort adaptado para struct
+void selectionSort(Produto v[], int n) {
     for (int i = 0; i < n - 1; i++) {
         int menor = i;
 
         for (int j = i + 1; j < n; j++) {
-            if (v[j] < v[menor]) {
+            if (v[j].id < v[menor].id) {
                 menor = j;
             }
         }
 
         if (menor != i) {
-            int temp = v[i];
+            Produto temp = v[i];
             v[i] = v[menor];
             v[menor] = temp;
         }
     }
 }
 
-// Mostrar numeros
-void mostrarVetor(int v[], int n) {
+// Kayke - Exibe os produtos formatados em uma tabela organizada no terminal
+void mostrarVetor(Produto v[], int n) {
+    printf("\n---------------------------------------------------------------------------\n");
+    printf("| ID  | Produto              | Categoria       | Preco    | Qtd | Fornecedor  |\n");
+    printf("---------------------------------------------------------------------------\n");
     for (int i = 0; i < n; i++) {
-        printf("%d ", v[i]);
+        // Alinhamento de colunas usando largura fixa de caracteres no printf
+        printf("| %-3d | %-20s | %-15s | R$%-6.2f | %-3d | %-11s |\n", 
+               v[i].id, v[i].produto, v[i].categoria, v[i].preco, v[i].quantidade, v[i].fornecedor);
     }
-    printf("\n");
+    printf("---------------------------------------------------------------------------\n");
 }
 
 
-// Leonardo
-// Bubble Sort
-void bubbleSort(int v[], int n) {
+// Leonardo - Bubble Sort adaptado para struct e salvamento do relatório
+void bubbleSort(Produto v[], int n) {
     for (int i = 0; i < n - 1; i++) {
         int trocou = 0;
 
         for (int j = 0; j < n - i - 1; j++) {
-            if (v[j] > v[j + 1]) {
-                int temp = v[j];
+            if (v[j].id > v[j + 1].id) {
+                Produto temp = v[j];
                 v[j] = v[j + 1];
                 v[j + 1] = temp;
                 trocou = 1;
             }
         }
 
-        if (!trocou) {
-            break;
-        }
+        if (!trocou) break;
     }
 }
 
-// Salvar numeros no arquivo
-int salvarOrdenado(int v[], int n) {
+int salvarOrdenado(Produto v[], int n) {
     FILE *arquivo = fopen("ordenado.txt", "w");
 
     if (arquivo == NULL) {
@@ -182,125 +235,85 @@ int salvarOrdenado(int v[], int n) {
     }
 
     for (int i = 0; i < n; i++) {
-        if (fprintf(arquivo, "%d\n", v[i]) < 0) {
-            printf("Erro ao escrever no arquivo.\n");
-            fclose(arquivo);
-            return 0;
-        }
+        fprintf(arquivo, "%d;%s;%s;%.2f;%d;%s\n", v[i].id, v[i].produto, v[i].categoria, v[i].preco, v[i].quantidade, v[i].fornecedor);
     }
 
-    if (fclose(arquivo) != 0) {
-        printf("Erro ao fechar o arquivo.\n");
-        return 0;
-    }
-
+    fclose(arquivo);
     printf("Dados salvos em ordenado.txt.\n");
     return 1;
 }
 
 
-// Vinicius
-void merge(int v[], int temp[], int inicio, int meio, int fim) {
+// Vinicius - Merge Sort com alocação dinâmica adaptado para struct
+void merge(Produto v[], Produto temp[], int inicio, int meio, int fim) {
     int i = inicio;
     int j = meio + 1;
     int k = inicio;
 
     while (i <= meio && j <= fim) {
-        if (v[i] <= v[j]) {
-            temp[k] = v[i];
-            i++;
+        if (v[i].id <= v[j].id) {
+            temp[k++] = v[i++];
         } else {
-            temp[k] = v[j];
-            j++;
+            temp[k++] = v[j++];
         }
-        k++;
     }
 
-    while (i <= meio) {
-        temp[k] = v[i];
-        i++;
-        k++;
-    }
-
-    while (j <= fim) {
-        temp[k] = v[j];
-        j++;
-        k++;
-    }
+    while (i <= meio) temp[k++] = v[i++];
+    while (j <= fim) temp[k++] = v[j++];
 
     for (i = inicio; i <= fim; i++) {
         v[i] = temp[i];
     }
 }
 
-void mergeSortRec(int v[], int temp[], int inicio, int fim) {
+void mergeSortRec(Produto v[], Produto temp[], int inicio, int fim) {
     if (inicio < fim) {
         int meio = (inicio + fim) / 2;
-
         mergeSortRec(v, temp, inicio, meio);
         mergeSortRec(v, temp, meio + 1, fim);
-
         merge(v, temp, inicio, meio, fim);
     }
 }
 
-void mergeSort(int v[], int n) {
-    if (n <= 1) {
-        return;
-    }
+void mergeSort(Produto v[], int n) {
+    if (n <= 1) return;
 
-    int *temp = malloc(n * sizeof(int));
-
+    Produto *temp = malloc(n * sizeof(Produto));
     if (temp == NULL) {
         printf("Erro de memoria!\n");
         return;
     }
 
     mergeSortRec(v, temp, 0, n - 1);
-
     free(temp);
 }
 
 
-// Ruan
-// Quick Sort
-void quickSort(int vetor[], int inicio, int fim) {
+// Ruan - Quick Sort adaptado para struct e gerenciamento do menu principal
+void quickSort(Produto vetor[], int inicio, int fim) {
     int i = inicio;
     int j = fim;
-    int pivo = vetor[(inicio + fim) / 2];
-    int auxiliar;
+    int pivo = vetor[(inicio + fim) / 2].id;
 
     while (i <= j) {
-        while (vetor[i] < pivo) {
-            i++;
-        }
-
-        while (vetor[j] > pivo) {
-            j--;
-        }
+        while (vetor[i].id < pivo) i++;
+        while (vetor[j].id > pivo) j--;
 
         if (i <= j) {
-            auxiliar = vetor[i];
+            Produto auxiliar = vetor[i];
             vetor[i] = vetor[j];
             vetor[j] = auxiliar;
-
             i++;
             j--;
         }
     }
 
-    if (inicio < j) {
-        quickSort(vetor, inicio, j);
-    }
-
-    if (i < fim) {
-        quickSort(vetor, i, fim);
-    }
+    if (inicio < j) quickSort(vetor, inicio, j);
+    if (i < fim) quickSort(vetor, i, fim);
 }
 
-// Executar ordenacao
 void executarOrdenacao(int opcao) {
-    int vetor[MAX];
+    Produto vetor[MAX];
     int quantidade = lerArquivoDados(vetor);
 
     if (quantidade == 0) {
@@ -308,69 +321,56 @@ void executarOrdenacao(int opcao) {
         return;
     }
 
-    printf("\nNumeros originais: ");
+    printf("\nProdutos originais:");
     mostrarVetor(vetor, quantidade);
 
     switch (opcao) {
         case 2:
             bubbleSort(vetor, quantidade);
-            printf("Bubble Sort: ");
+            printf("\n--- Ordenado por Bubble Sort ---");
             break;
-
         case 3:
             insertionSort(vetor, quantidade);
-            printf("Insertion Sort: ");
+            printf("\n--- Ordenado por Insertion Sort ---");
             break;
-
         case 4:
             selectionSort(vetor, quantidade);
-            printf("Selection Sort: ");
+            printf("\n--- Ordenado por Selection Sort ---");
             break;
-
         case 5:
             mergeSort(vetor, quantidade);
-            printf("Merge Sort: ");
+            printf("\n--- Ordenado por Merge Sort ---");
             break;
-
         case 6:
             quickSort(vetor, 0, quantidade - 1);
-            printf("Quick Sort: ");
+            printf("\n--- Ordenado por Quick Sort ---");
             break;
-
-        default:
-            printf("Opcao invalida!\n");
-            return;
     }
 
     mostrarVetor(vetor, quantidade);
     salvarOrdenado(vetor, quantidade);
 }
 
-// Menu principal
 void menuPrincipal(void) {
     int opcao;
 
     do {
         printf("\n====================================\n");
-        printf(" SISTEMA DE ORDENACAO DE ARQUIVOS\n");
+        printf(" SISTEMA DE CADASTRO E LOJA\n");
         printf("====================================\n");
-        printf("1 - Criar arquivo de dados\n");
+        printf("1 - Cadastrar novo produto\n");
         printf("2 - Bubble Sort\n");
         printf("3 - Insertion Sort\n");
         printf("4 - Selection Sort\n");
         printf("5 - Merge Sort\n");
         printf("6 - Quick Sort\n");
-        printf("7 - Alterar valor no arquivo\n");
+        printf("7 - Alterar ou excluir produto\n");
         printf("0 - Sair\n");
         printf("Escolha uma opcao: ");
 
         if (scanf("%d", &opcao) != 1) {
             int caractere;
-
-            while ((caractere = getchar()) != '\n' &&
-                   caractere != EOF) {
-            }
-
+            while ((caractere = getchar()) != '\n' && caractere != EOF);
             printf("Digite uma opcao valida!\n");
             continue;
         }
@@ -379,7 +379,6 @@ void menuPrincipal(void) {
             case 1:
                 criarArquivoDados();
                 break;
-
             case 2:
             case 3:
             case 4:
@@ -387,15 +386,12 @@ void menuPrincipal(void) {
             case 6:
                 executarOrdenacao(opcao);
                 break;
-
             case 7:
                 alterarValorArquivo();
                 break;
-
             case 0:
                 printf("Encerrando o programa...\n");
                 break;
-
             default:
                 printf("Opcao invalida! Tente novamente.\n");
         }
@@ -403,9 +399,7 @@ void menuPrincipal(void) {
     } while (opcao != 0);
 }
 
-// Main
 int main(void) {
     menuPrincipal();
     return 0;
 }
-
